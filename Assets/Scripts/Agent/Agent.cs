@@ -10,7 +10,7 @@ public abstract class Agent : MonoBehaviour
         {typeof(Police), AgentType.Police},
         {typeof(Medical), AgentType.Medical},
     };
-
+    public int i, x, y;
     public AgentType Type { get { return types[GetType()]; } }
     public InfectionState Infection = InfectionState.Healthy;
     [Range(0, 1)]
@@ -19,6 +19,8 @@ public abstract class Agent : MonoBehaviour
     public float SocialNeeds = 0, ErrandNeeds = 0;
     [Range(0, 1)]
     public float Trust = 1;
+
+    public int DaysInfected = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -31,15 +33,30 @@ public abstract class Agent : MonoBehaviour
 
     }
 
+    public virtual void Init()
+    {
+
+    }
+
+    public virtual void UpdateBeliefs()
+    {
+
+    }
+
+    public virtual void UpdateIntention()
+    {
+
+    }
+
+    public virtual void Act()
+    {
+
+    }
+
     public virtual void Step()
     {
-        if (Health > 0)
-        {
-            Health -= 0.01f;
-        }
-        if (Health < 0)
-        {
-            Health = 0;
-        }
+        UpdateBeliefs();
+        UpdateIntention();
+        Act();
     }
 }

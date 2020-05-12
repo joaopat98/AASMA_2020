@@ -9,66 +9,102 @@ public class SimulationManager : MonoBehaviour
     public float AgentScale = 0.75f;
     public int NumCivilians = 25, NumPolice = 5, NumMedical = 5;
     public float StepsPerSecond = 1;
-    float timePerStep;
+    public bool Playing;
+    float timePerStep
+    {
+        get
+        {
+            return 1 / StepsPerSecond;
+        }
+    }
     int numAgents;
-    private List<Agent> agents;
+    int boardSide;
+    public Virus virus = new Virus();
+
+    [HideInInspector]
+    public List<Agent> Agents;
     float counter = 0;
     // Start is called before the first frame update
     void Start()
     {
-        timePerStep = 1 / StepsPerSecond;
         numAgents = NumCivilians + NumPolice + NumMedical;
-        int side = Mathf.CeilToInt(Mathf.Sqrt(numAgents));
+        boardSide = Mathf.CeilToInt(Mathf.Sqrt(numAgents));
 
         Bounds bounds = GetComponent<SpriteRenderer>().bounds;
         float minX = bounds.min.x;
         float minY = bounds.min.y;
         float width = bounds.size.x;
         float height = bounds.size.y;
-        float sizeX = width / side, sizeY = height / side;
+        float sizeX = width / boardSide, sizeY = height / boardSide;
         Vector3 topLeft = bounds.max + width * Vector3.left + new Vector3(sizeX / 2, -sizeY / 2, 0);
 
-        float scaleFac = 1 / (float)side * AgentScale;
-        agents = new List<Agent>();
+        float scaleFac = 1 / (float)boardSide * AgentScale;
+        Agents = new List<Agent>();
         int i = 0;
         for (int j = 0; j < NumCivilians; j++)
         {
-            int x = i % side, y = i / side;
-            agents.Add(Instantiate(CivilianPrefab, topLeft + new Vector3(x * sizeX, -y * sizeY, 0), Quaternion.identity, transform).GetComponent<Agent>());
-            agents[i].transform.localScale *= scaleFac;
+            int x = i % boardSide, y = i / boardSide;
+            Agents.Add(Instantiate(CivilianPrefab, topLeft + new Vector3(x * sizeX, -y * sizeY, 0), Quaternion.identity, transform).GetComponent<Agent>());
             i++;
         }
         for (int j = 0; j < NumPolice; j++)
         {
-            int x = i % side, y = i / side;
-            agents.Add(Instantiate(PolicePrefab, topLeft + new Vector3(x * sizeX, -y * sizeY, 0), Quaternion.identity, transform).GetComponent<Agent>());
-            agents[i].transform.localScale *= scaleFac;
+            int x = i % boardSide, y = i / boardSide;
+            Agents.Add(Instantiate(PolicePrefab, topLeft + new Vector3(x * sizeX, -y * sizeY, 0), Quaternion.identity, transform).GetComponent<Agent>());
             i++;
         }
         for (int j = 0; j < NumMedical; j++)
         {
-            int x = i % side, y = i / side;
-            agents.Add(Instantiate(MedicalPrefab, topLeft + new Vector3(x * sizeX, -y * sizeY, 0), Quaternion.identity, transform).GetComponent<Agent>());
-            agents[i].transform.localScale *= scaleFac;
+            int x = i % boardSide, y = i / boardSide;
+            Agents.Add(Instantiate(MedicalPrefab, topLeft + new Vector3(x * sizeX, -y * sizeY, 0), Quaternion.identity, transform).GetComponent<Agent>());
             i++;
         }
+
+        for (int index = 0; index < numAgents; index++)
+        {
+            int x = index % boardSide, y = index / boardSide;
+            Agents[index].transform.localScale *= scaleFac;
+            Agents[index].x = x;
+            Agents[index].y = y;
+            Agents[index].i = i;
+        }
+
+        virus.Init(this);
     }
 
     void Update()
     {
-        counter += Time.deltaTime;
-        while (counter > timePerStep)
+        if (Playing)
         {
-            Step();
-            counter -= timePerStep;
+            counter += Time.deltaTime;
+            while (counter > timePerStep)
+            {
+                Step();
+                counter -= timePerStep;
+            }
         }
     }
 
-    void Step()
+    public void Step()
     {
-        foreach (var agent in agents)
+        virus.Step();
+        foreach (var agent in Agents)
         {
             agent.Step();
         }
+    }
+
+    public Agent GetAgent(int x, int y)
+    {
+        if (y >= boardSide || x >= boardSide || y < 0 || x < 0 || y * boardSide + x > numAgents)
+        {
+            return null;
+        }
+        return Agents[y * boardSide + x];
+    }
+
+    public Agent GetAgent(Vector2Int v)
+    {
+        return GetAgent(v.x, v.y);
     }
 }
