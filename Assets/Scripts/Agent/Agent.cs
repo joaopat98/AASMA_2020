@@ -10,8 +10,11 @@ public abstract class Agent : MonoBehaviour
         {typeof(Police), AgentType.Police},
         {typeof(Medical), AgentType.Medical},
     };
-    public int i, x, y;
     public AgentType Type { get { return types[GetType()]; } }
+    public int i, x, y;
+
+    public static Dictionary<AgentAction, ActionOutcome> Outcomes = new Dictionary<AgentAction, ActionOutcome>();
+
     public InfectionState Infection = InfectionState.Healthy;
 
     [Range(0, 1)]
@@ -27,6 +30,9 @@ public abstract class Agent : MonoBehaviour
     public int AgeGroup = 0;
 
     public int DaysInfected = 0;
+    public bool UsingMask;
+    public AgentAction CurrentAction;
+    public float WillRisk;
 
     // Start is called before the first frame update
     void Start()
@@ -49,7 +55,14 @@ public abstract class Agent : MonoBehaviour
     //Will act as a multiplier on the virus lethality
     public virtual float LethalityFactor()//(Age, Type)
     {
-        throw new NotImplementedException();
+        Debug.Log("Lethality not implemented!");
+        return 0;
+    }
+
+    public virtual float InfectabilityFactor()//(Age, Type)
+    {
+        Debug.Log("Infectability not implemented!");
+        return 0;
     }
 
     public virtual void UpdateBeliefs()
@@ -67,6 +80,15 @@ public abstract class Agent : MonoBehaviour
 
     }
 
+    public virtual void AskNeighbors()
+    {
+
+    }
+
+    public virtual AgentObservation ObserveNeighbors()
+    {
+        return null;
+    }
 
     public virtual void Step()
     {

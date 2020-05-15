@@ -19,14 +19,30 @@ public class SimulationManager : MonoBehaviour
     }
     int numAgents;
     int boardSide;
+
+    [System.Serializable]
+    public class ActionOutcomeSettings
+    {
+        public ActionOutcome GoShopping, OrderFood, GoOut, CallFriends;
+    }
+    public ActionOutcomeSettings ActionOutcomes;
     public Virus virus = new Virus();
 
     [HideInInspector]
     public List<Agent> Agents;
     float counter = 0;
+
+    public static SimulationManager main;
     // Start is called before the first frame update
     void Start()
     {
+        SimulationManager.main = this;
+
+        Agent.Outcomes[AgentAction.CallFriends] = ActionOutcomes.CallFriends;
+        Agent.Outcomes[AgentAction.GoOut] = ActionOutcomes.GoOut;
+        Agent.Outcomes[AgentAction.GoShopping] = ActionOutcomes.GoShopping;
+        Agent.Outcomes[AgentAction.OrderFood] = ActionOutcomes.OrderFood;
+
         numAgents = NumCivilians + NumPolice + NumMedical;
         boardSide = Mathf.CeilToInt(Mathf.Sqrt(numAgents));
 

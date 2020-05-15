@@ -1,3 +1,4 @@
-public class Civilian : Agent {
+public class Civilian : Agent
+{
 
 }
