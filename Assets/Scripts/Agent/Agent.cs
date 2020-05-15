@@ -13,14 +13,21 @@ public abstract class Agent : MonoBehaviour
     public int i, x, y;
     public AgentType Type { get { return types[GetType()]; } }
     public InfectionState Infection = InfectionState.Healthy;
+
     [Range(0, 1)]
     public float Health = 1;
+
     [Range(0, 1)]
     public float SocialNeeds = 0, ErrandNeeds = 0;
+
     [Range(0, 1)]
     public float Trust = 1;
 
+    [Range(0, 4)]
+    public int AgeGroup = 0;
+
     public int DaysInfected = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -38,6 +45,13 @@ public abstract class Agent : MonoBehaviour
 
     }
 
+    //Calculate the lethality proper to this agent. 
+    //Will act as a multiplier on the virus lethality
+    public virtual float LethalityFactor()//(Age, Type)
+    {
+        throw new NotImplementedException();
+    }
+
     public virtual void UpdateBeliefs()
     {
 
@@ -52,6 +66,7 @@ public abstract class Agent : MonoBehaviour
     {
 
     }
+
 
     public virtual void Step()
     {
