@@ -1,14 +1,17 @@
+using System.Collections.Generic;
+using UnityEngine;
+
 public class AgentObservation
 {
-    public int NumDead, NumInfected;
+    public List<Agent> Dead, Infected;
     public AgentAction LastAction;
-    public bool UsingMask;
+    public bool UsedMask;
 
-    public AgentObservation(int numDead, int numInfected, AgentAction lastAction, bool usingMask)
+    public AgentObservation(AgentAction lastAction, bool usedMask)
     {
-        NumDead = numDead;
-        NumInfected = numInfected;
+        Dead = new List<Agent>();
+        Infected = new List<Agent>();
         LastAction = lastAction;
-        UsingMask = usingMask;
+        UsedMask = usedMask;
     }
 }

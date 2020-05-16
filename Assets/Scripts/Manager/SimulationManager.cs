@@ -106,7 +106,15 @@ public class SimulationManager : MonoBehaviour
         virus.Step();
         foreach (var agent in Agents)
         {
-            agent.Step();
+            agent.UpdateBeliefs();
+        }
+        foreach (var agent in Agents)
+        {
+            agent.UpdateIntention();
+        }
+        foreach (var agent in Agents)
+        {
+            agent.Act();
         }
     }
 
