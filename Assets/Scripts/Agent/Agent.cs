@@ -75,21 +75,23 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
 
     public virtual void Init()
     {
-
+        this.AgeGroup = UnityEngine.Random.Range(0,5);
+        this.Trust = UnityEngine.Random.value;
     }
 
-    //Calculate the lethality proper to this agent. 
-    //Will act as a multiplier on the virus lethality
-    public virtual float LethalityFactor()//(Age, Type)
+    //If you are >75 years old the lethality is 5 times as high as <25 years old.
+    public virtual float LethalityFactor()//(Age)
     {
-        Debug.Log("Lethality not implemented!");
-        return 0;
+        return (0.5f + this.AgeGroup * 0.5f);
     }
 
-    public virtual float InfectabilityFactor()//(Age, Type)
+    //Being medical staff or police increases your chance of being infected by 3.
+    public virtual float InfectabilityFactor()//(Type)
     {
-        Debug.Log("Infectability not implemented!");
-        return 0;
+        if (this.Type == AgentType.Civilian)
+            return 1;
+        else
+            return 3;
     }
 
     public virtual void AskNeighbors()
