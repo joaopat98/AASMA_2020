@@ -9,16 +9,19 @@ public class Government
 {
     public struct Advice
     {
-        public bool useMask, socialDistancing;
+        public bool useMask;
 
-        public Advice(bool _useMask, bool _socialDistancing)
+        [Range(0, 1)]
+        public float socialDistancing;
+
+        public Advice(bool _useMask, float _socialDistancing)
         {
-            useMask = _useMask;
+            useMask = _useMask;    
             socialDistancing = _socialDistancing;
         }
     };
 
-    protected Advice currentAdvice = new Advice(false, false);
+    protected Advice currentAdvice = new Advice(false, 0.0f);
 
 
     //Portugal: Social distancing at 331 infected and 1 dead
@@ -50,7 +53,7 @@ public class Government
 
 
         this.currentAdvice.useMask = true;
-        this.currentAdvice.socialDistancing = true;
+        this.currentAdvice.socialDistancing = 1.0f;
     }
 
     public void Step(int _civilianCount, int _infectedCount, int _deadCount)
