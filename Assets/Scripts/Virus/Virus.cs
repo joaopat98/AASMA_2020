@@ -10,6 +10,7 @@ public class Virus
     public float IncubationTime = 5;
 
     SimulationManager manager;
+    public List<Agent> toInfect = new List<Agent>();
 
     public void Init(SimulationManager manager)
     {
@@ -22,7 +23,7 @@ public class Virus
 
     public void Step()
     {
-        List<Agent> toInfect = new List<Agent>();
+        //List<Agent> toInfect = new List<Agent>();
         foreach (var agent in manager.Agents)
         {
             if (agent.Infection == InfectionState.UnknowinglyInfected)
@@ -42,7 +43,7 @@ public class Virus
                     agent.Infection = InfectionState.Dead;
                 }
             }
-
+            
             if (agent.Infection == InfectionState.UnknowinglyInfected || agent.Infection == InfectionState.OpenlyInfected)
             {
                 List<Vector2Int> offsetCoords = new List<Vector2Int>() {
@@ -64,10 +65,12 @@ public class Virus
                     }
                 }
             }
+            
+            if(toInfect.Contains(agent) && Random.Range(0.0f, 1.0f) < Transmission)
+            {
+                agent.Infection = InfectionState.UnknowinglyInfected;
+            }
         }
-        foreach (var agent in toInfect)
-        {
-            agent.Infection = InfectionState.UnknowinglyInfected;
-        }
+        toInfect.Clear();
     }
 }

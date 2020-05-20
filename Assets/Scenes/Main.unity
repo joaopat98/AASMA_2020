@@ -1112,7 +1112,12 @@ MonoBehaviour:
     Lethality: 0.01
     Transmission: 0.01
     IncubationTime: 5
+    toInfect: []
   Agents: []
+  HealthyInStore: []
+  InfectedInStore: []
+  HealthyAtThePark: []
+  InfectedAtThePark: []
 --- !u!1 &1929898334
 GameObject:
   m_ObjectHideFlags: 0

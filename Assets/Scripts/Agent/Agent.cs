@@ -92,18 +92,21 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
         return 0;
     }
 
+    
     public virtual void AskNeighbors()
     {
         ResetKnown();
         List<Agent> dead = new List<Agent>(), infected = new List<Agent>();
         foreach (var dir in aroundDirs)
         {
+
             Agent agent = SimulationManager.main.GetAgent(new Vector2Int(x, y) + dir);
             AgentObservation obs = agent.ObserveNeighbors();
             dead.AddRange(obs.Dead);
             infected.AddRange(obs.Infected);
             knownUsingMask += obs.UsedMask ? 1 : 0;
             knownActions[obs.LastAction]++;
+            
         }
         knownDead = dead.Distinct().Count();
         knownInfected = infected.Distinct().Count();
@@ -114,16 +117,19 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
         var obs = new AgentObservation(CurrentAction, UsingMask);
         foreach (var dir in aroundDirs)
         {
+            
             var agent = SimulationManager.main.GetAgent(new Vector2Int(x, y) + dir);
             if (agent.Infection == InfectionState.Dead) obs.Dead.Add(agent);
             if (agent.Infection == InfectionState.OpenlyInfected) obs.Infected.Add(agent);
+            
         }
         return obs;
     }
+    
 
     public virtual void UpdateBeliefs()
     {
-        AskNeighbors();
+        //AskNeighbors();
     }
 
     public virtual void UpdateIntention()
@@ -131,9 +137,19 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
 
     }
 
-    public virtual void Act()
+    public void Act()
     {
+        //if(Infection != InfectionState.Dead){
+        
+            //Action abc = new GoShopping(this);
+            //Action abc = new OrderFood(this);
 
+            //Action abc = new GoOut(this);
+            //Action abc = new CallFriend(this);
+        
+            //abc.Execute();
+        //}
+        
     }
 
     public bool Equals(Agent other)
