@@ -92,6 +92,7 @@ public class SimulationManager : MonoBehaviour
             Agents[index].x = x;
             Agents[index].y = y;
             Agents[index].i = i;
+            Agents[index].Init();
         }
 
         virus.Init(this);
@@ -112,6 +113,11 @@ public class SimulationManager : MonoBehaviour
 
     public void Step()
     {
+        foreach (var agent in Agents)
+        {
+            agent.SocialNeeds = Mathf.Clamp01(agent.SocialNeeds + 0.1f);
+            agent.ErrandNeeds = Mathf.Clamp01(agent.ErrandNeeds + 0.1f);
+        }
         virus.Step();
         foreach (var agent in Agents)
         {
@@ -127,7 +133,7 @@ public class SimulationManager : MonoBehaviour
         }
         foreach (var agent in Agents)
         {
-            agent.CurrentAction.Execute();
+            agent.Act();
         }
         Calculate_StoreAndPark();
     }

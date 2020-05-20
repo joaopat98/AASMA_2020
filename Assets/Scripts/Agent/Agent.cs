@@ -36,7 +36,7 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
     public float SocialNeeds = 0, ErrandNeeds = 0;
     public float SocialDistancing = 0;
     [Range(0, 1)]
-    public float Trust = 1;
+    public float Trust = 0;
 
     [Range(0, 4)]
     public int AgeGroup = 0;
@@ -44,7 +44,7 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
     public int DaysInfected = 0;
     public bool UsingMask;
 
-    public Action CurrentAction;
+    public AgentAction CurrentAction;
     public float WillRisk;
     private int knownDead;
     private int knownInfected;
@@ -82,21 +82,23 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
     {
         this.AgeGroup = UnityEngine.Random.Range(0, 5);
         this.Trust = UnityEngine.Random.value;
+        AgentAction[] actions = (AgentAction[])Enum.GetValues(typeof(AgentAction));
+        CurrentAction = RandomTools.PickRandom(new List<AgentAction>(actions), 1)[0];
     }
 
     //If you are >75 years old the lethality is 5 times as high as <25 years old.
     public virtual float LethalityFactor()//(Age)
     {
-        return (0.5f + this.AgeGroup * 0.5f);
+        return (0.2f + this.AgeGroup * 0.2f);
     }
 
     //Being medical staff or police increases your chance of being infected by 3.
     public virtual float InfectabilityFactor()//(Type)
     {
         if (this.Type == AgentType.Civilian)
-            return 1;
+            return 0.2f;
         else
-            return 3;
+            return 0.8f;
     }
 
 
@@ -131,13 +133,16 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
 
     public virtual AgentObservation ObserveNeighbors()
     {
-        var obs = new AgentObservation(CurrentAction.type, UsingMask);
+        var obs = new AgentObservation(CurrentAction, UsingMask);
         foreach (var dir in aroundDirs)
         {
 
             var agent = SimulationManager.main.GetAgent(new Vector2Int(x, y) + dir);
-            if (agent.Infection == InfectionState.Dead) obs.Dead.Add(agent);
-            if (agent.Infection == InfectionState.OpenlyInfected) obs.Infected.Add(agent);
+            if (agent != null)
+            {
+                if (agent.Infection == InfectionState.Dead) obs.Dead.Add(agent);
+                if (agent.Infection == InfectionState.OpenlyInfected) obs.Infected.Add(agent);
+            }
 
         }
         return obs;
@@ -178,11 +183,11 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
             float thresh = 1 - knownActions[AgentAction.GoOut] / (float)aliveNeighbors;
             if (sNeed > thresh)
             {
-                CurrentAction = new GoOut(this);
+                CurrentAction = AgentAction.GoOut;
             }
             else
             {
-                CurrentAction = new CallFriend(this);
+                CurrentAction = AgentAction.CallFriends;
             }
         }
         else
@@ -191,12 +196,49 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
             float thresh = 1 - knownActions[AgentAction.GoShopping] / (float)aliveNeighbors;
             if (eNeed > thresh)
             {
-                CurrentAction = new GoShopping(this);
+                CurrentAction = AgentAction.GoShopping;
             }
             else
             {
-                CurrentAction = new OrderFood(this);
+                CurrentAction = AgentAction.OrderFood;
             }
+        }
+    }
+
+    public void Act()
+    {
+        switch (CurrentAction)
+        {
+            case AgentAction.CallFriends:
+                SocialNeeds -= 0.1f;
+                Mathf.Clamp(SocialNeeds, 0.0f, 1.0f);
+                break;
+            case AgentAction.GoOut:
+                if (Infection == InfectionState.Healthy || Infection == InfectionState.Cured)
+                {
+                    SimulationManager.main.HealthyAtThePark.Add(this);
+                }
+                else
+                {
+                    SimulationManager.main.InfectedAtThePark.Add(this);
+                }
+                SocialNeeds -= 0.2f;
+                break;
+            case AgentAction.OrderFood:
+                ErrandNeeds -= 0.1f;
+                Mathf.Clamp(ErrandNeeds, 0.0f, 1.0f);
+                break;
+            default:
+                if (Infection == InfectionState.Healthy || Infection == InfectionState.Cured)
+                {
+                    SimulationManager.main.HealthyInStore.Add(this);
+                }
+                else
+                {
+                    SimulationManager.main.InfectedInStore.Add(this);
+                }
+                ErrandNeeds -= 0.2f;
+                break;
         }
     }
 
