@@ -23,7 +23,6 @@ public class Virus
 
     public void Step()
     {
-        //List<Agent> toInfect = new List<Agent>();
         foreach (var agent in manager.Agents)
         {
             if (agent.Infection == InfectionState.UnknowinglyInfected)

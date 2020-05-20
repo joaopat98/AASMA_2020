@@ -25,6 +25,6 @@ public class GoShopping : Action
            manager.InfectedInStore.Add(agent);
         }
 
-        agent.ErrandNeeds = 1;
+        agent.ErrandNeeds = 0.0f;
     }
 }

@@ -11,6 +11,7 @@ public class OrderFood : Action
 
     public override void Execute()
     {   
-        agent.ErrandNeeds = 0.5f;
+        agent.ErrandNeeds -= 0.5f;
+        Mathf.Clamp(agent.ErrandNeeds, 0.0f, 1.0f);
     }
 }

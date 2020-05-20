@@ -25,6 +25,6 @@ public class GoOut : Action
            manager.InfectedAtThePark.Add(agent);
         }
 
-        agent.ErrandNeeds = 1;
+        agent.ErrandNeeds = 0.0f;
     }
 }

@@ -17,8 +17,10 @@ public abstract class Action
                 return new GoShopping(agent);
             case AgentAction.GoOut:
                 return new GoOut(agent);
+            case AgentAction.OrderFood:
+                return new OrderFood(agent);
             default:
-                return new GoShopping(agent);
+                return new CallFriend(agent);
         }
     }
 
