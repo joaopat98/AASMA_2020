@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Build.Reporting;
 using UnityEngine;
 
 public class SimulationManager : MonoBehaviour
@@ -10,6 +11,7 @@ public class SimulationManager : MonoBehaviour
     public int NumCivilians = 25, NumPolice = 5, NumMedical = 5;
     public float StepsPerSecond = 1;
     public bool Playing;
+    private int currentStep = 1;
     float timePerStep
     {
         get
@@ -31,9 +33,15 @@ public class SimulationManager : MonoBehaviour
 
     [HideInInspector]
     public List<Agent> Agents;
+    [HideInInspector]
     public List<Agent> Healthy;
+    [HideInInspector]
     public List<Agent> Infected;
+    [HideInInspector]
     public List<Agent> Dead;
+
+    public float averageTrust = 0.5f;
+
     float counter = 0;
 
     public List<Agent> HealthyInStore;
@@ -99,6 +107,7 @@ public class SimulationManager : MonoBehaviour
         }
 
         virus.Init(this);
+        CreateReport();
     }
 
     void Update()
@@ -142,6 +151,8 @@ public class SimulationManager : MonoBehaviour
         }
         Calculate_StoreAndPark();
         UpdateAgentLists();
+        UpdateReport();
+        currentStep++;
     }
 
     public Agent GetAgent(int x, int y)
@@ -208,5 +219,24 @@ public class SimulationManager : MonoBehaviour
                 case (InfectionState.Dead): Dead.Add(agent); break;
             }
         }
+    }
+
+    void CreateReport()
+    {
+        string parameters = averageTrust.ToString() + "," + government.boldness.ToString() + "," + NumCivilians.ToString() + "," + NumPolice.ToString() + "," + NumMedical.ToString();
+        string virusParameters = virus.Lethality.ToString() + "," + virus.Transmission.ToString() + "," + virus.IncubationTime.ToString();
+        CSVManager.CreateReport(parameters, virusParameters);
+    }
+    
+    void UpdateReport()
+    {
+        string[] line = new string[4]
+        {
+            currentStep.ToString(),
+            Healthy.Count.ToString(),
+            Infected.Count.ToString(),
+            Dead.Count.ToString()
+        };
+        CSVManager.AppendToReport(line);
     }
 }
