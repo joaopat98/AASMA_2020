@@ -118,7 +118,7 @@ public class SimulationManager : MonoBehaviour
             agent.SocialNeeds = Mathf.Clamp01(agent.SocialNeeds + 0.1f);
             agent.ErrandNeeds = Mathf.Clamp01(agent.ErrandNeeds + 0.1f);
         }
-        virus.Step();
+        
         foreach (var agent in Agents)
         {
             agent.AskNeighbors();
@@ -133,9 +133,15 @@ public class SimulationManager : MonoBehaviour
         }
         foreach (var agent in Agents)
         {
-            agent.Act();
+            if(agent.Infection != InfectionState.Dead)
+                agent.Act();
         }
-        Calculate_StoreAndPark();
+        virus.Step();
+        
+        InfectedAtThePark.Clear();
+        InfectedInStore.Clear();
+        HealthyInStore.Clear();
+        HealthyAtThePark.Clear();
     }
 
     public Agent GetAgent(int x, int y)
@@ -150,39 +156,5 @@ public class SimulationManager : MonoBehaviour
     public Agent GetAgent(Vector2Int v)
     {
         return GetAgent(v.x, v.y);
-    }
-
-    float CalculateInfectedPercentage(List<Agent> Infected, List<Agent> Healthy)
-    {
-        if (Infected.Count == 0 && Healthy.Count == 0)
-            return 0.0f;
-        return (float)Infected.Count / (float)(Infected.Count + Healthy.Count);
-    }
-
-    void CalculateInfections(List<Agent> HealthyInArea, float percentage)
-    {
-        foreach (Agent agent in HealthyInArea)
-        {
-            if (agent.Infection == InfectionState.Healthy && Random.Range(0.0f, 1.0f) < percentage)
-            {
-                virus.toInfect.Add(agent);
-            }
-        }
-    }
-
-    void Calculate_StoreAndPark()
-    {
-
-        float InfectedPercentageStore = CalculateInfectedPercentage(InfectedInStore, HealthyInStore);
-        float InfectedPercentagePark = CalculateInfectedPercentage(InfectedAtThePark, HealthyAtThePark);
-
-        CalculateInfections(HealthyInStore, InfectedPercentageStore);
-        CalculateInfections(HealthyAtThePark, InfectedPercentagePark);
-
-        InfectedInStore.Clear();
-        HealthyInStore.Clear();
-
-        HealthyAtThePark.Clear();
-        InfectedAtThePark.Clear();
     }
 }

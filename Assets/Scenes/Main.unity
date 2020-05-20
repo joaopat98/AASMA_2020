@@ -1108,11 +1108,10 @@ MonoBehaviour:
       socialReward: 0.5
       errandReward: 0
   virus:
-    startingInfected: 5
+    startingInfected: 10
     Lethality: 0.01
-    Transmission: 0.01
+    Transmission: 0.1
     IncubationTime: 5
-    toInfect: []
   Agents: []
   HealthyInStore: []
   InfectedInStore: []
