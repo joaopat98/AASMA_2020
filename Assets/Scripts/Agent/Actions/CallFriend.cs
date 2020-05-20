@@ -10,7 +10,7 @@ public class CallFriend : Action
     }
 
     public override void Execute()
-    {   
+    {
         agent.SocialNeeds = 0.5f;
     }
 }

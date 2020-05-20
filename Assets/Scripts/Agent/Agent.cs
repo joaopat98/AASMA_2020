@@ -34,7 +34,7 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
 
     [Range(0, 1)]
     public float SocialNeeds = 0, ErrandNeeds = 0;
-
+    public float SocialDistancing = 0;
     [Range(0, 1)]
     public float Trust = 1;
 
@@ -43,12 +43,14 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
 
     public int DaysInfected = 0;
     public bool UsingMask;
-    public AgentAction CurrentAction;
-    public float WillRisk;
 
+    public Action CurrentAction;
+    public float WillRisk;
     private int knownDead;
     private int knownInfected;
     private int knownUsingMask;
+    private int aliveNeighbors, totalNeighbors;
+    private float SocialDistancingNeighbors;
     private Dictionary<AgentAction, int> knownActions = new Dictionary<AgentAction, int>();
     private void ResetKnown()
     {
@@ -59,6 +61,9 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
         knownDead = 0;
         knownInfected = 0;
         knownUsingMask = 0;
+        aliveNeighbors = 0;
+        totalNeighbors = 0;
+        SocialDistancing = 0;
     }
 
     // Start is called before the first frame update
@@ -75,7 +80,7 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
 
     public virtual void Init()
     {
-        this.AgeGroup = UnityEngine.Random.Range(0,5);
+        this.AgeGroup = UnityEngine.Random.Range(0, 5);
         this.Trust = UnityEngine.Random.value;
     }
 
@@ -94,7 +99,7 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
             return 3;
     }
 
-    
+
     public virtual void AskNeighbors()
     {
         ResetKnown();
@@ -103,55 +108,96 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
         {
 
             Agent agent = SimulationManager.main.GetAgent(new Vector2Int(x, y) + dir);
-            AgentObservation obs = agent.ObserveNeighbors();
-            dead.AddRange(obs.Dead);
-            infected.AddRange(obs.Infected);
-            knownUsingMask += obs.UsedMask ? 1 : 0;
-            knownActions[obs.LastAction]++;
-            
+            if (agent != null)
+            {
+                AgentObservation obs = agent.ObserveNeighbors();
+                dead.AddRange(obs.Dead);
+                infected.AddRange(obs.Infected);
+                knownUsingMask += obs.UsedMask ? 1 : 0;
+                knownActions[obs.LastAction]++;
+                aliveNeighbors += agent.Infection != InfectionState.Dead ? 1 : 0;
+                totalNeighbors += 1;
+                if (agent.Infection != InfectionState.Dead)
+                {
+                    SocialDistancingNeighbors += agent.SocialDistancing;
+                }
+            }
         }
+        if (aliveNeighbors > 0)
+            SocialDistancingNeighbors /= aliveNeighbors;
         knownDead = dead.Distinct().Count();
         knownInfected = infected.Distinct().Count();
     }
 
     public virtual AgentObservation ObserveNeighbors()
     {
-        var obs = new AgentObservation(CurrentAction, UsingMask);
+        var obs = new AgentObservation(CurrentAction.type, UsingMask);
         foreach (var dir in aroundDirs)
         {
-            
+
             var agent = SimulationManager.main.GetAgent(new Vector2Int(x, y) + dir);
             if (agent.Infection == InfectionState.Dead) obs.Dead.Add(agent);
             if (agent.Infection == InfectionState.OpenlyInfected) obs.Infected.Add(agent);
-            
+
         }
         return obs;
     }
-    
+
 
     public virtual void UpdateBeliefs()
     {
-        //AskNeighbors();
+        var govAdvice = SimulationManager.main.government.GetAdvice();
+        float decision = Trust * (govAdvice.useMask ? 1 : 0);
+        if (aliveNeighbors > 0)
+            decision += (1 - Trust) * (knownUsingMask / (float)aliveNeighbors);
+        UsingMask = decision >= UnityEngine.Random.value;
+        SocialDistancing = Trust * govAdvice.socialDistancing;
+        if (aliveNeighbors > 0)
+            SocialDistancingNeighbors += (1 - Trust) * SocialDistancingNeighbors;
     }
 
     public virtual void UpdateIntention()
     {
+        bool social;
+        if (SocialNeeds > ErrandNeeds)
+        {
+            social = true;
+        }
+        else if (SocialNeeds < ErrandNeeds)
+        {
+            social = false;
+        }
+        else
+        {
+            social = UnityEngine.Random.value > 0.5;
+        }
 
-    }
-
-    public void Act()
-    {
-        //if(Infection != InfectionState.Dead){
-        
-            //Action abc = new GoShopping(this);
-            //Action abc = new OrderFood(this);
-
-            //Action abc = new GoOut(this);
-            //Action abc = new CallFriend(this);
-        
-            //abc.Execute();
-        //}
-        
+        if (social)
+        {
+            float sNeed = SocialNeeds * (1 - SocialDistancing);
+            float thresh = 1 - knownActions[AgentAction.GoOut] / (float)aliveNeighbors;
+            if (sNeed > thresh)
+            {
+                CurrentAction = new GoOut(this);
+            }
+            else
+            {
+                CurrentAction = new CallFriend(this);
+            }
+        }
+        else
+        {
+            float eNeed = ErrandNeeds * (1 - SocialDistancing);
+            float thresh = 1 - knownActions[AgentAction.GoShopping] / (float)aliveNeighbors;
+            if (eNeed > thresh)
+            {
+                CurrentAction = new GoShopping(this);
+            }
+            else
+            {
+                CurrentAction = new OrderFood(this);
+            }
+        }
     }
 
     public bool Equals(Agent other)
