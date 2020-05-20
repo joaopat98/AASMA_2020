@@ -27,6 +27,7 @@ public class SimulationManager : MonoBehaviour
     }
     public ActionOutcomeSettings ActionOutcomes;
     public Virus virus = new Virus();
+    public Government government = new Government();
 
     [HideInInspector]
     public List<Agent> Agents;
