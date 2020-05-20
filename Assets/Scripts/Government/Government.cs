@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.XR.WSA.Input;
 
 public class Government
 {
@@ -34,6 +35,25 @@ public class Government
     [Range(0,1)]
     public float boldness = 0.5f;
 
+    protected float socialDistanceThreshSick = 0.0f;
+    protected float socialDistanceThreshDead = 0.0f;
+    protected float maskThreshSick = 0.0f;
+    protected float maskThreshDead = 0.0f;
+
+    void Start()
+    {
+        //If boldness = 1,
+        //never use mask
+        //Social distancing at 0.585 % infected and 0.0121 % dead
+        //If boldness = 0,
+        //Masks mandatory at 24.3 % infected and 0.980 % dead
+        //Social distancing at 0.322 % infected and 0 % dead
+        socialDistanceThreshSick = Mathf.Lerp(0.00322f, 0.00585f, boldness);
+        socialDistanceThreshDead = Mathf.Lerp(0, 0.000121f, boldness);
+        maskThreshSick = Mathf.Lerp(0.243f, 1f, boldness);
+        maskThreshDead = Mathf.Lerp(0.0098f, 1f, boldness);
+    }
+
     public Advice GetAdvice()
     {
         return this.currentAdvice;
@@ -41,19 +61,11 @@ public class Government
 
     protected void DecideAdvice(float _percentDead, float _percentSick)
     {
-        //If boldness = 1,
-        //never use mask
-        //Social distancing at 0.00585 % infected and 0.000121 % dead
-        //If boldness = 0,
-        //Masks mandatory at 0.243 % infected and 0.00980 % dead
-        //Social distancing at 0.00322 % infected and 0 % dead
+        this.currentAdvice.socialDistancing = Mathf.Lerp(0, 1, (_percentDead + _percentSick) / (socialDistanceThreshSick + socialDistanceThreshDead));
+            
+        if (_percentDead > maskThreshDead || _percentSick > maskThreshSick)
+            this.currentAdvice.useMask = true;
         
-        
-        //We should define a neighborhood as X percent of the population, thus simluating a small percentage but having the government act as if there was a larger population.
-
-
-        this.currentAdvice.useMask = true;
-        this.currentAdvice.socialDistancing = 1.0f;
     }
 
     public void Step(int _civilianCount, int _infectedCount, int _deadCount)
