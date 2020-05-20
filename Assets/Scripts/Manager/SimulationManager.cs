@@ -31,6 +31,9 @@ public class SimulationManager : MonoBehaviour
 
     [HideInInspector]
     public List<Agent> Agents;
+    public List<Agent> Healthy;
+    public List<Agent> Infected;
+    public List<Agent> Dead;
     float counter = 0;
 
     public List<Agent> HealthyInStore;
@@ -112,13 +115,15 @@ public class SimulationManager : MonoBehaviour
     }
 
     public void Step()
-    {
+    {  
+        virus.Step();
+        government.Step(Agents.Count, Infected.Count, Dead.Count);
+
         foreach (var agent in Agents)
         {
             agent.SocialNeeds = Mathf.Clamp01(agent.SocialNeeds + 0.1f);
             agent.ErrandNeeds = Mathf.Clamp01(agent.ErrandNeeds + 0.1f);
         }
-        virus.Step();
         foreach (var agent in Agents)
         {
             agent.AskNeighbors();
@@ -136,6 +141,7 @@ public class SimulationManager : MonoBehaviour
             agent.Act();
         }
         Calculate_StoreAndPark();
+        UpdateAgentLists();
     }
 
     public Agent GetAgent(int x, int y)
@@ -184,5 +190,23 @@ public class SimulationManager : MonoBehaviour
 
         HealthyAtThePark.Clear();
         InfectedAtThePark.Clear();
+    }
+
+    void UpdateAgentLists()
+    {
+        Healthy.Clear();
+        Infected.Clear();
+        Dead.Clear();
+        foreach (var agent in Agents)
+        {
+            switch (agent.Infection)
+            {
+                case (InfectionState.Healthy): Healthy.Add(agent); break;
+                case (InfectionState.Cured): Healthy.Add(agent); break;
+                case (InfectionState.OpenlyInfected): Infected.Add(agent); break;
+                case (InfectionState.UnknowinglyInfected): Infected.Add(agent); break;
+                case (InfectionState.Dead): Dead.Add(agent); break;
+            }
+        }
     }
 }
