@@ -5,9 +5,9 @@ using UnityEngine;
 public class Virus
 {
     public int startingInfected = 1;
-    public float Lethality = 1;
-    public float Transmission = 1;
-    public float IncubationTime = 5;
+    public NormalDist Lethality = new NormalDist();
+    public NormalDist Transmission = new NormalDist();
+    public NormalDist IncubationTime = new NormalDist();
     //public int RecoveryDays = 1;
 
     SimulationManager manager;
@@ -21,6 +21,7 @@ public class Virus
         foreach (var agent in manager.Agents.PickRandom(startingInfected))
         {
             agent.Infection = InfectionState.UnknowinglyInfected;
+            agent.IncubationTime = Mathf.RoundToInt(IncubationTime.NextVal());
         }
         StoreTransmission = 0.0f;
         ParkTransmission = 0.0f;
@@ -28,9 +29,9 @@ public class Virus
 
     public void Step()
     {
-        StoreTransmission = Transmission *
+        StoreTransmission = Transmission.NextVal() *
             CalculateInfectedPercentage(manager.InfectedInStore, manager.HealthyInStore);
-        ParkTransmission = Transmission *
+        ParkTransmission = Transmission.NextVal() *
             CalculateInfectedPercentage(manager.InfectedAtThePark, manager.HealthyAtThePark);
 
         foreach (var agent in manager.Agents)
@@ -39,14 +40,14 @@ public class Virus
             {
                 case InfectionState.UnknowinglyInfected:
                     agent.DaysInfected++;
-                    if (agent.DaysInfected >= IncubationTime)
+                    if (agent.DaysInfected >= agent.IncubationTime)
                     {
                         agent.Infection = InfectionState.OpenlyInfected;
                     }
                     break;
 
                 case InfectionState.OpenlyInfected:
-                    agent.Health -= Lethality;
+                    agent.Health -= Lethality.NextVal() * agent.LethalityFactor();
                     agent.DaysInfected++;
                     if (agent.Health <= 0)
                     {
@@ -60,17 +61,19 @@ public class Virus
                         }
                     }*/
                     break;
-            
+
                 case InfectionState.Healthy:
-                    if(manager.HealthyInStore.Contains(agent) &&
+                    if (manager.HealthyInStore.Contains(agent) &&
                         Random.Range(0f, 1f) < StoreTransmission)
                     {
                         agent.Infection = InfectionState.UnknowinglyInfected;
+                        agent.IncubationTime = Mathf.RoundToInt(IncubationTime.NextVal());
                     }
-                    else if(manager.HealthyAtThePark.Contains(agent) &&
+                    else if (manager.HealthyAtThePark.Contains(agent) &&
                         Random.Range(0f, 1f) < ParkTransmission)
                     {
                         agent.Infection = InfectionState.UnknowinglyInfected;
+                        agent.IncubationTime = Mathf.RoundToInt(IncubationTime.NextVal());
                     }
                     break;
 
@@ -79,19 +82,19 @@ public class Virus
                         agent.Health += Lethality;
                     */
                     break;
-                
+
                 //Dead
                 default:
                     break;
             }
         }
     }
-    
+
 
     float CalculateInfectedPercentage(List<Agent> Infected, List<Agent> Healthy)
     {
         if (Infected.Count == 0 && Healthy.Count == 0)
             return 0.0f;
         return (float)Infected.Count / (float)(Infected.Count + Healthy.Count);
-    }    
+    }
 }

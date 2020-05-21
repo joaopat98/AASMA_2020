@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.XR.WSA.Input;
 
+[Serializable]
 public class Government
 {
     public struct Advice
@@ -17,7 +16,7 @@ public class Government
 
         public Advice(bool _useMask, float _socialDistancing)
         {
-            useMask = _useMask;    
+            useMask = _useMask;
             socialDistancing = _socialDistancing;
         }
     };
@@ -32,7 +31,7 @@ public class Government
     //UK:       Social distancing at 3900 infected and 81 dead
     //          Masks still not mandatory (144127 infected and 34796 dead)
     //          Population = 66 650 000
-    [Range(0,1)]
+    [Range(0, 1)]
     public float boldness = 0.5f;
 
     protected float socialDistanceThreshSick = 0.0f;
@@ -40,7 +39,7 @@ public class Government
     protected float maskThreshSick = 0.0f;
     protected float maskThreshDead = 0.0f;
 
-    void Start()
+    public void Init()
     {
         //If boldness = 1,
         //never use mask
@@ -61,17 +60,20 @@ public class Government
 
     protected void DecideAdvice(float _percentDead, float _percentSick)
     {
-        this.currentAdvice.socialDistancing = Mathf.Lerp(0, 1, (_percentDead + _percentSick) / (socialDistanceThreshSick + socialDistanceThreshDead));
-            
+        if (socialDistanceThreshSick + socialDistanceThreshDead != 0)
+            this.currentAdvice.socialDistancing = Mathf.Lerp(0, 1, (_percentDead + _percentSick) / (socialDistanceThreshSick + socialDistanceThreshDead));
+        else
+            this.currentAdvice.socialDistancing = 0;
+
         if (_percentDead > maskThreshDead || _percentSick > maskThreshSick)
             this.currentAdvice.useMask = true;
-        
+
     }
 
     public void Step(int _civilianCount, int _infectedCount, int _deadCount)
     {
-        float percentDead = _deadCount / _civilianCount;
-        float percentSick = _infectedCount / _civilianCount;
+        float percentDead = _deadCount / (float)_civilianCount;
+        float percentSick = _infectedCount / (float)_civilianCount;
 
         DecideAdvice(percentDead, percentSick);
     }

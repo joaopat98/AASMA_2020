@@ -36,17 +36,30 @@ public class SimulationManager : MonoBehaviour
     [HideInInspector]
     public List<Agent> Healthy;
     [HideInInspector]
-    public List<Agent> Infected;
+    public List<Agent> OpenlyInfected;
+    [HideInInspector]
+    public List<Agent> UnknowinglyInfected;
     [HideInInspector]
     public List<Agent> Dead;
 
-    public float averageTrust = 0.5f;
+    [System.Serializable]
+    public class AgentValues
+    {
+        public NormalDist Trust = new NormalDist();
+        public NormalDist AgeGroup = new NormalDist();
+        public NormalDist MedicalRecovery = new NormalDist();
+        public int MedicalPatients = 3;
+    }
+    public AgentValues agentValues = new AgentValues();
 
     float counter = 0;
-
+    [HideInInspector]
     public List<Agent> HealthyInStore;
+    [HideInInspector]
     public List<Agent> InfectedInStore;
+    [HideInInspector]
     public List<Agent> HealthyAtThePark;
+    [HideInInspector]
     public List<Agent> InfectedAtThePark;
 
     public static SimulationManager main;
@@ -107,6 +120,7 @@ public class SimulationManager : MonoBehaviour
         }
 
         virus.Init(this);
+        government.Init();
         CreateReport();
     }
 
@@ -124,14 +138,14 @@ public class SimulationManager : MonoBehaviour
     }
 
     public void Step()
-    {  
+    {
         virus.Step();
-        government.Step(Agents.Count, Infected.Count, Dead.Count);
+        government.Step(Agents.Count, OpenlyInfected.Count, Dead.Count);
 
         foreach (var agent in Agents)
         {
-            agent.SocialNeeds = Mathf.Clamp01(agent.SocialNeeds + 0.1f);
-            agent.ErrandNeeds = Mathf.Clamp01(agent.ErrandNeeds + 0.1f);
+            agent.SocialNeeds = Mathf.Clamp01(agent.SocialNeeds + 0.15f);
+            agent.ErrandNeeds = Mathf.Clamp01(agent.ErrandNeeds + 0.15f);
         }
 
         foreach (var agent in Agents)
@@ -148,11 +162,11 @@ public class SimulationManager : MonoBehaviour
         }
         foreach (var agent in Agents)
         {
-            if(agent.Infection != InfectionState.Dead)
+            if (agent.Infection != InfectionState.Dead)
                 agent.Act();
         }
         virus.Step();
-        
+
         InfectedAtThePark.Clear();
         InfectedInStore.Clear();
         HealthyInStore.Clear();
@@ -180,7 +194,8 @@ public class SimulationManager : MonoBehaviour
     void UpdateAgentLists()
     {
         Healthy.Clear();
-        Infected.Clear();
+        OpenlyInfected.Clear();
+        UnknowinglyInfected.Clear();
         Dead.Clear();
         foreach (var agent in Agents)
         {
@@ -188,8 +203,8 @@ public class SimulationManager : MonoBehaviour
             {
                 case (InfectionState.Healthy): Healthy.Add(agent); break;
                 case (InfectionState.Cured): Healthy.Add(agent); break;
-                case (InfectionState.OpenlyInfected): Infected.Add(agent); break;
-                case (InfectionState.UnknowinglyInfected): Infected.Add(agent); break;
+                case (InfectionState.OpenlyInfected): OpenlyInfected.Add(agent); break;
+                case (InfectionState.UnknowinglyInfected): UnknowinglyInfected.Add(agent); break;
                 case (InfectionState.Dead): Dead.Add(agent); break;
             }
         }
@@ -197,18 +212,18 @@ public class SimulationManager : MonoBehaviour
 
     void CreateReport()
     {
-        string parameters = averageTrust.ToString() + "," + government.boldness.ToString() + "," + NumCivilians.ToString() + "," + NumPolice.ToString() + "," + NumMedical.ToString();
+        string parameters = agentValues.Trust.ToString() + "," + government.boldness.ToString() + "," + NumCivilians.ToString() + "," + NumPolice.ToString() + "," + NumMedical.ToString();
         string virusParameters = virus.Lethality.ToString() + "," + virus.Transmission.ToString() + "," + virus.IncubationTime.ToString();
         CSVManager.CreateReport(parameters, virusParameters);
     }
-    
+
     void UpdateReport()
     {
         string[] line = new string[4]
         {
             currentStep.ToString(),
             Healthy.Count.ToString(),
-            Infected.Count.ToString(),
+            OpenlyInfected.Count.ToString(),
             Dead.Count.ToString()
         };
         CSVManager.AppendToReport(line);

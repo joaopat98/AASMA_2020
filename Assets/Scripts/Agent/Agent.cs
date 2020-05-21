@@ -42,6 +42,7 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
     public int AgeGroup = 0;
 
     public int DaysInfected = 0;
+    public int IncubationTime;
     public bool UsingMask;
 
     public AgentAction CurrentAction;
@@ -80,8 +81,10 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
 
     public virtual void Init()
     {
-        this.AgeGroup = UnityEngine.Random.Range(0, 5);
-        this.Trust = UnityEngine.Random.value;
+        this.AgeGroup = Mathf.Clamp(Mathf.RoundToInt(SimulationManager.main.agentValues.AgeGroup.NextVal()), 0, 4);
+        this.Trust = SimulationManager.main.agentValues.Trust.NextVal();
+        this.SocialNeeds = UnityEngine.Random.value;
+        this.ErrandNeeds = UnityEngine.Random.value;
         AgentAction[] actions = (AgentAction[])Enum.GetValues(typeof(AgentAction));
         CurrentAction = RandomTools.PickRandom(new List<AgentAction>(actions), 1)[0];
     }
@@ -112,16 +115,16 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
             Agent agent = SimulationManager.main.GetAgent(new Vector2Int(x, y) + dir);
             if (agent != null)
             {
-                AgentObservation obs = agent.ObserveNeighbors();
-                dead.AddRange(obs.Dead);
-                infected.AddRange(obs.Infected);
-                knownUsingMask += obs.UsedMask ? 1 : 0;
-                knownActions[obs.LastAction]++;
                 aliveNeighbors += agent.Infection != InfectionState.Dead ? 1 : 0;
                 totalNeighbors += 1;
                 if (agent.Infection != InfectionState.Dead)
                 {
                     SocialDistancingNeighbors += agent.SocialDistancing;
+                    AgentObservation obs = agent.ObserveNeighbors();
+                    dead.AddRange(obs.Dead);
+                    infected.AddRange(obs.Infected);
+                    knownUsingMask += obs.UsedMask ? 1 : 0;
+                    knownActions[obs.LastAction]++;
                 }
             }
         }
@@ -181,6 +184,7 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
         {
             float sNeed = SocialNeeds * (1 - SocialDistancing);
             float thresh = 1 - knownActions[AgentAction.GoOut] / (float)aliveNeighbors;
+            //float thresh = 0.8f;
             if (sNeed > thresh)
             {
                 CurrentAction = AgentAction.GoOut;
@@ -194,6 +198,7 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
         {
             float eNeed = ErrandNeeds * (1 - SocialDistancing);
             float thresh = 1 - knownActions[AgentAction.GoShopping] / (float)aliveNeighbors;
+            //float thresh = 0.8f;
             if (eNeed > thresh)
             {
                 CurrentAction = AgentAction.GoShopping;
@@ -205,7 +210,7 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
         }
     }
 
-    public void Act()
+    public virtual void Act()
     {
         switch (CurrentAction)
         {
