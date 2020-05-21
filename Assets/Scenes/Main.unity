@@ -1110,16 +1110,16 @@ MonoBehaviour:
   virus:
     startingInfected: 10
     Lethality:
-      Mean: 0
-      StdDev: 0
-      Clamp: 0
+      Mean: 0.8
+      StdDev: 0.1
+      Clamp: 1
     Transmission:
-      Mean: 0
-      StdDev: 0
-      Clamp: 0
+      Mean: 0.8
+      StdDev: 0.1
+      Clamp: 1
     IncubationTime:
-      Mean: 0
-      StdDev: 0
+      Mean: 10
+      StdDev: 3
       Clamp: 0
   government:
     boldness: 0.5
