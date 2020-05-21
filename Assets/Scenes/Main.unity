@@ -1085,7 +1085,7 @@ MonoBehaviour:
   MedicalPrefab: {fileID: 6967343556900013710, guid: b36f6768f1d438c49b2d258cd10461ba,
     type: 3}
   AgentScale: 0.636
-  NumCivilians: 64
+  NumCivilians: 10000
   NumPolice: 0
   NumMedical: 0
   StepsPerSecond: 50
@@ -1109,10 +1109,39 @@ MonoBehaviour:
       errandReward: 0
   virus:
     startingInfected: 10
-    Lethality: 0.01
-    Transmission: 0.1
-    IncubationTime: 5
+    Lethality:
+      Mean: 0
+      StdDev: 0
+      Clamp: 0
+    Transmission:
+      Mean: 0
+      StdDev: 0
+      Clamp: 0
+    IncubationTime:
+      Mean: 0
+      StdDev: 0
+      Clamp: 0
+  government:
+    boldness: 0.5
   Agents: []
+  Healthy: []
+  OpenlyInfected: []
+  UnknowinglyInfected: []
+  Dead: []
+  agentValues:
+    Trust:
+      Mean: 0.5
+      StdDev: 0.3
+      Clamp: 1
+    AgeGroup:
+      Mean: 2
+      StdDev: 2
+      Clamp: 0
+    MedicalRecovery:
+      Mean: 0
+      StdDev: 0
+      Clamp: 0
+    MedicalPatients: 3
   HealthyInStore: []
   InfectedInStore: []
   HealthyAtThePark: []
