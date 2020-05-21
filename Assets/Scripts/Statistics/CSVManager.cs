@@ -7,11 +7,13 @@ public static class CSVManager
     private static string reportFolderName = "Statistics";
     private static string reportFileName = "statistics.csv";
     private static string reportSeparator = ",";
-    private static string[] stepHeaders = new string[4] {
+    private static string[] stepHeaders = new string[6] {
         "Step",
         "Healthy Count",
         "Infected Count",
-        "Dead Count"
+        "Dead Count",
+        "Advice: Use Mask",
+        "Advice: Social Distancing"
     };
     private static string[] parameterHeadings = new string[5] {
         "Average Trust",

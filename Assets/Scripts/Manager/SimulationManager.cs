@@ -219,12 +219,14 @@ public class SimulationManager : MonoBehaviour
 
     void UpdateReport()
     {
-        string[] line = new string[4]
+        string[] line = new string[6]
         {
             currentStep.ToString(),
             Healthy.Count.ToString(),
             OpenlyInfected.Count.ToString(),
-            Dead.Count.ToString()
+            Dead.Count.ToString(),
+            government.GetAdvice().useMask.ToString(),
+            government.GetAdvice().socialDistancing.ToString(),
         };
         CSVManager.AppendToReport(line);
     }
