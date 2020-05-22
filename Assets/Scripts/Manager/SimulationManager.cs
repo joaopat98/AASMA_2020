@@ -179,7 +179,7 @@ public class SimulationManager : MonoBehaviour
 
     public Agent GetAgent(int x, int y)
     {
-        if (y >= boardSide || x >= boardSide || y < 0 || x < 0 || y * boardSide + x > numAgents)
+        if (y >= boardSide || x >= boardSide || y < 0 || x < 0 || y * boardSide + x >= numAgents)
         {
             return null;
         }
