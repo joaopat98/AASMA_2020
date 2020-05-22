@@ -5,8 +5,9 @@ using UnityEditor.PackageManager;
 public static class CSVManager
 {
     private static string reportFolderName = "Statistics";
-    private static string reportFileName = "statistics.csv";
+    private static string reportFileName = "statistics";
     private static string reportSeparator = ",";
+    private static string TimeNow;
     private static string[] stepHeaders = new string[6] {
         "Step",
         "Healthy Count",
@@ -50,6 +51,7 @@ public static class CSVManager
 
     public static void CreateReport(string parameters, string virus)
     {
+        TimeNow = System.DateTime.Now.ToString("dd-MM-yyyy--HH_mm_ss");
         VerifyDirectory();
         using (StreamWriter sw = File.CreateText(GetFilePath()))
         {
@@ -130,7 +132,7 @@ public static class CSVManager
 
     static string GetFilePath()
     {
-        return GetDirectoryPath() + "/" + reportFileName;
+        return GetDirectoryPath() + "/" + reportFileName + "_" + TimeNow + ".csv";
     }
 #endregion
 }
