@@ -22,6 +22,7 @@ public class Virus
         {
             agent.Infection = InfectionState.UnknowinglyInfected;
             agent.IncubationTime = Mathf.RoundToInt(IncubationTime.NextVal());
+            agent.RecoveryTime = Mathf.RoundToInt(RecoveryTime.NextVal() * agent.RecoveryFactor);
         }
         StoreTransmission = 0.0f;
         ParkTransmission = 0.0f;
@@ -75,6 +76,7 @@ public class Virus
                     {
                         agent.Infection = InfectionState.UnknowinglyInfected;
                         agent.IncubationTime = Mathf.RoundToInt(IncubationTime.NextVal());
+                        agent.RecoveryTime = Mathf.RoundToInt(RecoveryTime.NextVal() * agent.RecoveryFactor);
                     }
                     break;
 
