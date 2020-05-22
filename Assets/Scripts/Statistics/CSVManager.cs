@@ -8,20 +8,21 @@ public static class CSVManager
     private static string reportFileName = "statistics";
     private static string reportSeparator = ",";
     private static string TimeNow;
-    private static string[] stepHeaders = new string[6] {
+    private static string[] stepHeaders = new string[7] {
         "Step",
-        "Healthy Count",
-        "Infected Count",
-        "Dead Count",
+        "Healthy",
+        "Infected",
+        "Dead",
         "Advice: Use Mask",
-        "Advice: Social Distancing"
+        "Advice: Social Distancing",
+        "Average Fear"
     };
     private static string[] parameterHeadings = new string[5] {
         "Average Trust",
         "Government Boldness",
-        "Number of Civilians",
-        "Number of Police",
-        "Number of Medical Staff"
+        "Civilians",
+        "Police",
+        "Medical Staff"
     };    
     private static string[] virusHeadings = new string[3] {
         "Lethality",
