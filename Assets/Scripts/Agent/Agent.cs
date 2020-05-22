@@ -43,12 +43,19 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
 
     public int DaysInfected = 0;
     public int IncubationTime;
+    public int RecoveryTime;
+
+    public float LethalityFactor;
+    public float InfectabilityFactor;
+    public float RecoveryFactor;
+
     public bool UsingMask;
 
     public AgentAction CurrentAction;
-    public float WillRisk;
+    public float Fear;
     private int knownDead;
     private int knownInfected;
+    private int knownNeighbors;
     private int knownUsingMask;
     private int aliveNeighbors, totalNeighbors;
     private float SocialDistancingNeighbors;
@@ -59,6 +66,7 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
         {
             knownActions[action] = 0;
         }
+        knownNeighbors = 0;
         knownDead = 0;
         knownInfected = 0;
         knownUsingMask = 0;
@@ -87,28 +95,23 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
         this.ErrandNeeds = UnityEngine.Random.value;
         AgentAction[] actions = (AgentAction[])Enum.GetValues(typeof(AgentAction));
         CurrentAction = RandomTools.PickRandom(new List<AgentAction>(actions), 1)[0];
-    }
+        //If you are >80 years old the lethality is 5 times as high as <20 years old.
+        LethalityFactor = 0.2f + this.AgeGroup * 0.2f;
 
-    //If you are >75 years old the lethality is 5 times as high as <25 years old.
-    public virtual float LethalityFactor()//(Age)
-    {
-        return (0.2f + this.AgeGroup * 0.2f);
-    }
-
-    //Being medical staff or police increases your chance of being infected by 3.
-    public virtual float InfectabilityFactor()//(Type)
-    {
+        //Being medical staff or police increases your chance of being infected by 3.
         if (this.Type == AgentType.Civilian)
-            return 0.2f;
+            InfectabilityFactor = 0.2f;
         else
-            return 0.8f;
-    }
+            InfectabilityFactor = 0.8f;
 
+        //Younger People can ttake as little as 60% less time to recover from the virus when compared to older people.
+        RecoveryFactor = 0.6f + this.AgeGroup * 0.1f;
+    }
 
     public virtual void AskNeighbors()
     {
         ResetKnown();
-        List<Agent> dead = new List<Agent>(), infected = new List<Agent>();
+        List<Agent> dead = new List<Agent>(), infected = new List<Agent>(), secondNeighbors = new List<Agent>();
         foreach (var dir in aroundDirs)
         {
 
@@ -121,6 +124,7 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
                 {
                     SocialDistancingNeighbors += agent.SocialDistancing;
                     AgentObservation obs = agent.ObserveNeighbors();
+                    secondNeighbors.AddRange(obs.Neighbors);
                     dead.AddRange(obs.Dead);
                     infected.AddRange(obs.Infected);
                     knownUsingMask += obs.UsedMask ? 1 : 0;
@@ -130,6 +134,7 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
         }
         if (aliveNeighbors > 0)
             SocialDistancingNeighbors /= aliveNeighbors;
+        knownNeighbors = secondNeighbors.Distinct().Count();
         knownDead = dead.Distinct().Count();
         knownInfected = infected.Distinct().Count();
     }
@@ -143,6 +148,7 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
             var agent = SimulationManager.main.GetAgent(new Vector2Int(x, y) + dir);
             if (agent != null)
             {
+                obs.Neighbors.Add(agent);
                 if (agent.Infection == InfectionState.Dead) obs.Dead.Add(agent);
                 if (agent.Infection == InfectionState.OpenlyInfected) obs.Infected.Add(agent);
             }
@@ -160,8 +166,17 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
             decision += (1 - Trust) * (knownUsingMask / (float)aliveNeighbors);
         UsingMask = decision >= UnityEngine.Random.value;
         SocialDistancing = Trust * govAdvice.socialDistancing;
+        float infectedPercent = knownInfected / (float)knownNeighbors;
+        float deadPercent = knownDead / (float)knownNeighbors;
+        Fear = Mathf.Max(infectedPercent, deadPercent);
         if (aliveNeighbors > 0)
-            SocialDistancingNeighbors += (1 - Trust) * SocialDistancingNeighbors;
+        {
+            SocialDistancing += (1 - Trust) * SocialDistancingNeighbors * Fear;
+        }
+        else
+        {
+            SocialDistancing += (1 - Trust) * Fear;
+        }
     }
 
     public virtual void UpdateIntention()

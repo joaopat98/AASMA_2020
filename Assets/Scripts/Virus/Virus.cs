@@ -8,7 +8,7 @@ public class Virus
     public NormalDist Lethality = new NormalDist();
     public NormalDist Transmission = new NormalDist();
     public NormalDist IncubationTime = new NormalDist();
-    //public int RecoveryDays = 1;
+    public NormalDist RecoveryTime = new NormalDist();
 
     SimulationManager manager;
 
@@ -47,7 +47,7 @@ public class Virus
                     break;
 
                 case InfectionState.OpenlyInfected:
-                    agent.Health -= Lethality.NextVal() * agent.LethalityFactor();
+                    agent.Health -= Lethality.NextVal() * agent.LethalityFactor;
                     agent.DaysInfected++;
                     if (agent.Health <= 0)
                     {
@@ -64,13 +64,14 @@ public class Virus
 
                 case InfectionState.Healthy:
                     if (manager.HealthyInStore.Contains(agent) &&
-                        Random.Range(0f, 1f) < StoreTransmission)
+                        Random.Range(0f, 1f) < StoreTransmission * agent.InfectabilityFactor)
                     {
                         agent.Infection = InfectionState.UnknowinglyInfected;
                         agent.IncubationTime = Mathf.RoundToInt(IncubationTime.NextVal());
+                        agent.RecoveryTime = Mathf.RoundToInt(RecoveryTime.NextVal() * agent.RecoveryFactor);
                     }
                     else if (manager.HealthyAtThePark.Contains(agent) &&
-                        Random.Range(0f, 1f) < ParkTransmission)
+                        Random.Range(0f, 1f) < ParkTransmission * agent.InfectabilityFactor)
                     {
                         agent.Infection = InfectionState.UnknowinglyInfected;
                         agent.IncubationTime = Mathf.RoundToInt(IncubationTime.NextVal());
@@ -86,6 +87,12 @@ public class Virus
                 //Dead
                 default:
                     break;
+            }
+            if ((agent.Infection == InfectionState.UnknowinglyInfected
+                || agent.Infection == InfectionState.OpenlyInfected)
+                && agent.DaysInfected > agent.RecoveryTime)
+            {
+                agent.Infection = InfectionState.Cured;
             }
         }
     }

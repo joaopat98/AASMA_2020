@@ -1085,9 +1085,9 @@ MonoBehaviour:
   MedicalPrefab: {fileID: 6967343556900013710, guid: b36f6768f1d438c49b2d258cd10461ba,
     type: 3}
   AgentScale: 0.636
-  NumCivilians: 10000
+  NumCivilians: 1000
   NumPolice: 0
-  NumMedical: 0
+  NumMedical: 10
   StepsPerSecond: 50
   Playing: 0
   ActionOutcomes:
@@ -1121,6 +1121,10 @@ MonoBehaviour:
       Mean: 10
       StdDev: 3
       Clamp: 0
+    RecoveryTime:
+      Mean: 20
+      StdDev: 3
+      Clamp: 0
   government:
     boldness: 0.5
   Agents: []
@@ -1138,8 +1142,8 @@ MonoBehaviour:
       StdDev: 2
       Clamp: 0
     MedicalRecovery:
-      Mean: 0
-      StdDev: 0
+      Mean: 0.01
+      StdDev: 0.003
       Clamp: 0
     MedicalPatients: 3
   HealthyInStore: []

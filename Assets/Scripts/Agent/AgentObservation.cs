@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class AgentObservation
 {
-    public List<Agent> Dead, Infected;
+    public List<Agent> Neighbors, Dead, Infected;
     public AgentAction LastAction;
     public bool UsedMask;
 
@@ -11,6 +11,7 @@ public class AgentObservation
     {
         Dead = new List<Agent>();
         Infected = new List<Agent>();
+        Neighbors = new List<Agent>();
         LastAction = lastAction;
         UsedMask = usedMask;
     }
