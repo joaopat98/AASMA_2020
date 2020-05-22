@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ManagerUI : MonoBehaviour
@@ -48,6 +49,11 @@ public class ManagerUI : MonoBehaviour
     public void Step()
     {
         manager.Step();
+    }
+
+    public void Reset()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     IEnumerator SaveHighlight()
