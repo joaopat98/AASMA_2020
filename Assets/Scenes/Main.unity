@@ -1215,11 +1215,12 @@ MonoBehaviour:
   MedicalPrefab: {fileID: 6967343556900013710, guid: b36f6768f1d438c49b2d258cd10461ba,
     type: 3}
   AgentScale: 0.636
-  NumCivilians: 1000
+  NumCivilians: 100
   NumPolice: 0
-  NumMedical: 10
-  StepsPerSecond: 50
+  NumMedical: 2
+  StepsPerSecond: 10000
   Playing: 0
+  MaxSteps: 365
   ActionOutcomes:
     GoShopping:
       risk: 0.5
@@ -1253,10 +1254,10 @@ MonoBehaviour:
       Clamp: 0
     RecoveryTime:
       Mean: 50
-      StdDev: 3
+      StdDev: 10
       Clamp: 0
   government:
-    boldness: 0.969
+    boldness: 0.5
   Agents: []
   Healthy: []
   OpenlyInfected: []

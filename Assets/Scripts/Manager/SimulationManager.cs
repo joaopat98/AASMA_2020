@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Build.Reporting;
 using UnityEngine;
 
 public class SimulationManager : MonoBehaviour
@@ -12,6 +11,8 @@ public class SimulationManager : MonoBehaviour
     public float StepsPerSecond = 1;
     public bool Playing;
     private int currentStep = 1;
+
+    public int MaxSteps = 365;
     float timePerStep
     {
         get
@@ -122,6 +123,10 @@ public class SimulationManager : MonoBehaviour
         virus.Init(this);
         government.Init();
         CreateReport();
+        if (!Application.isEditor)
+        {
+            Playing = true;
+        }
     }
 
     void Update()
@@ -132,7 +137,17 @@ public class SimulationManager : MonoBehaviour
             while (counter > timePerStep)
             {
                 Step();
+                Debug.Log(currentStep);
                 counter -= timePerStep;
+                if (HasEnded())
+                {
+                    if (!Application.isEditor)
+                    {
+                        Application.Quit();
+                    }
+                    Playing = false;
+                    break;
+                }
             }
         }
     }
@@ -191,6 +206,11 @@ public class SimulationManager : MonoBehaviour
         return GetAgent(v.x, v.y);
     }
 
+    bool HasEnded()
+    {
+        return currentStep >= MaxSteps || (UnknowinglyInfected.Count == 0 && OpenlyInfected.Count == 0);
+    }
+
     void UpdateAgentLists()
     {
         Healthy.Clear();
@@ -225,7 +245,7 @@ public class SimulationManager : MonoBehaviour
             Healthy.Count.ToString(),
             OpenlyInfected.Count.ToString(),
             Dead.Count.ToString(),
-            government.GetAdvice().useMask.ToString(),
+            government.GetAdvice().useMask ? "1" : "0",
             government.GetAdvice().socialDistancing.ToString(),
         };
         CSVManager.AppendToReport(line);

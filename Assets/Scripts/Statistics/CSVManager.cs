@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.IO;
-using UnityEditor.PackageManager;
 
 public static class CSVManager
 {
@@ -22,7 +21,7 @@ public static class CSVManager
         "Number of Civilians",
         "Number of Police",
         "Number of Medical Staff"
-    };    
+    };
     private static string[] virusHeadings = new string[3] {
         "Lethality",
         "Transmission Rate",
@@ -122,7 +121,7 @@ public static class CSVManager
         }
     }
 
-#endregion
+    #endregion
 
     #region Queries
     static string GetDirectoryPath()
@@ -134,5 +133,5 @@ public static class CSVManager
     {
         return GetDirectoryPath() + "/" + reportFileName + "_" + TimeNow + ".csv";
     }
-#endregion
+    #endregion
 }
