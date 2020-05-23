@@ -230,7 +230,7 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
         switch (CurrentAction)
         {
             case AgentAction.CallFriends:
-                SocialNeeds -= 0.1f;
+                SocialNeeds -= 0.2f;
                 Mathf.Clamp(SocialNeeds, 0.0f, 1.0f);
                 break;
             case AgentAction.GoOut:
@@ -242,10 +242,10 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
                 {
                     SimulationManager.main.InfectedAtThePark.Add(this);
                 }
-                SocialNeeds -= 0.2f;
+                SocialNeeds -= 0.4f;
                 break;
             case AgentAction.OrderFood:
-                ErrandNeeds -= 0.1f;
+                ErrandNeeds -= 0.2f;
                 Mathf.Clamp(ErrandNeeds, 0.0f, 1.0f);
                 break;
             default:
@@ -257,7 +257,7 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
                 {
                     SimulationManager.main.InfectedInStore.Add(this);
                 }
-                ErrandNeeds -= 0.2f;
+                ErrandNeeds -= 0.4f;
                 break;
         }
     }
