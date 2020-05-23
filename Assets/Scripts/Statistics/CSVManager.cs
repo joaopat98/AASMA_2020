@@ -3,7 +3,7 @@ using System.IO;
 
 public static class CSVManager
 {
-    private static string reportFolderName = "Statistics";
+    public static string reportFolderName = "Statistics";
     private static string reportFileName = "statistics";
     private static string reportSeparator = ",";
     private static string TimeNow;
@@ -52,8 +52,9 @@ public static class CSVManager
         }
     }
 
-    public static void CreateReport(string parameters, string virus)
+    public static void CreateReport(string folderExtension, string parameters, string virus)
     {
+        reportFolderName = reportFolderName + "/" + folderExtension;
         TimeNow = System.DateTime.Now.ToString("dd-MM-yyyy--HH_mm_ss");
         VerifyDirectory();
         using (StreamWriter sw = File.CreateText(GetFilePath()))
@@ -135,7 +136,7 @@ public static class CSVManager
 
     static string GetFilePath()
     {
-        return GetDirectoryPath() + "/" + reportFileName + "_" + TimeNow + ".csv";
+        return GetDirectoryPath() +  "/" + reportFileName + "_" + TimeNow + ".csv";
     }
 
     public static string GetSettingsFilePath()

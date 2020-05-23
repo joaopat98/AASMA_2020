@@ -14,7 +14,7 @@ public class SimulationManager : MonoBehaviour
     public float StepsPerSecond = 1;
     public bool Playing;
     private int currentStep = 1;
-
+    public string statisticsFolderExtension = "";
     public int MaxSteps = 365;
     float timePerStep
     {
@@ -246,7 +246,7 @@ public class SimulationManager : MonoBehaviour
     {
         string parameters = agentValues.Trust.ToString() + "," + government.boldness.ToString() + "," + NumCivilians.ToString() + "," + NumPolice.ToString() + "," + NumMedical.ToString();
         string virusParameters = virus.Lethality.ToString() + "," + virus.Transmission.ToString() + "," + virus.IncubationTime.ToString();
-        CSVManager.CreateReport(parameters, virusParameters);
+        CSVManager.CreateReport(statisticsFolderExtension, parameters, virusParameters);
     }
 
     void UpdateReport()
