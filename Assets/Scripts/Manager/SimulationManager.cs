@@ -45,6 +45,8 @@ public class SimulationManager : MonoBehaviour
     public List<Agent> UnknowinglyInfected;
     [HideInInspector]
     public List<Agent> Dead;
+    [HideInInspector]
+    public List<Agent> Cured;
 
     [System.Serializable]
     public class AgentValues
@@ -222,6 +224,7 @@ public class SimulationManager : MonoBehaviour
 
     void UpdateAgentLists()
     {
+        Cured.Clear();
         Healthy.Clear();
         OpenlyInfected.Clear();
         UnknowinglyInfected.Clear();
@@ -231,7 +234,7 @@ public class SimulationManager : MonoBehaviour
             switch (agent.Infection)
             {
                 case (InfectionState.Healthy): Healthy.Add(agent); break;
-                case (InfectionState.Cured): Healthy.Add(agent); break;
+                case (InfectionState.Cured): Cured.Add(agent); break;
                 case (InfectionState.OpenlyInfected): OpenlyInfected.Add(agent); break;
                 case (InfectionState.UnknowinglyInfected): UnknowinglyInfected.Add(agent); break;
                 case (InfectionState.Dead): Dead.Add(agent); break;
@@ -248,14 +251,30 @@ public class SimulationManager : MonoBehaviour
 
     void UpdateReport()
     {
-        string[] line = new string[6]
+        var usingMaskCount = 0;
+        var avgSocialDistancing = 0.0f;
+        var avgFear = 0.0f;
+        foreach (Agent agent in Agents)
+        {
+            avgSocialDistancing += agent.SocialDistancing;
+            avgFear += agent.Fear;
+            usingMaskCount += agent.UsingMask ? 1 : 0;
+        }
+        avgSocialDistancing /= (float)Agents.Count;
+        avgFear /= (float)Agents.Count;
+
+        string[] line = new string[10]
         {
             currentStep.ToString(),
             Healthy.Count.ToString(),
-            OpenlyInfected.Count.ToString(),
+            (OpenlyInfected.Count + UnknowinglyInfected.Count).ToString(),
+            Cured.Count.ToString(),
             Dead.Count.ToString(),
             government.GetAdvice().useMask ? "1" : "0",
             government.GetAdvice().socialDistancing.ToString(),
+            usingMaskCount.ToString(),
+            avgSocialDistancing.ToString(),
+            avgFear.ToString()
         };
         CSVManager.AppendToReport(line);
     }

@@ -7,13 +7,16 @@ public static class CSVManager
     private static string reportFileName = "statistics";
     private static string reportSeparator = ",";
     private static string TimeNow;
-    private static string[] stepHeaders = new string[7] {
+    private static string[] stepHeaders = new string[10] {
         "Step",
         "Healthy",
         "Infected",
+        "Cured",
         "Dead",
         "Advice: Use Mask",
         "Advice: Social Distancing",
+        "Using Mask",
+        "Average Social Distancing",
         "Average Fear"
     };
     private static string[] parameterHeadings = new string[5] {
