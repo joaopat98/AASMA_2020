@@ -1,7 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
+[Serializable]
 public class SimulationManager : MonoBehaviour
 {
     public GameObject CivilianPrefab, PolicePrefab, MedicalPrefab;
@@ -67,6 +70,11 @@ public class SimulationManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (!Application.isEditor)
+        {
+            string paramText = File.ReadAllText("params.json");
+            JsonUtility.FromJsonOverwrite(paramText, this);
+        }
         HealthyInStore = new List<Agent>();
         InfectedInStore = new List<Agent>();
 
@@ -125,6 +133,7 @@ public class SimulationManager : MonoBehaviour
         CreateReport();
         if (!Application.isEditor)
         {
+            File.Copy("params.json", CSVManager.GetSettingsFilePath());
             Playing = true;
         }
     }

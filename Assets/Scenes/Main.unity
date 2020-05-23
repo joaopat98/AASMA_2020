@@ -1215,9 +1215,9 @@ MonoBehaviour:
   MedicalPrefab: {fileID: 6967343556900013710, guid: b36f6768f1d438c49b2d258cd10461ba,
     type: 3}
   AgentScale: 0.636
-  NumCivilians: 100
+  NumCivilians: 10000
   NumPolice: 0
-  NumMedical: 2
+  NumMedical: 20
   StepsPerSecond: 10000
   Playing: 0
   MaxSteps: 365

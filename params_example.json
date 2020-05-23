@@ -1,0 +1,51 @@
+{
+    "NumCivilians": 10000,
+    "NumPolice": 0,
+    "NumMedical": 20,
+    "StepsPerSecond": 10000.0,
+    "MaxSteps": 365,
+    "virus": {
+        "startingInfected": 10,
+        "Lethality": {
+            "Mean": 0.05,
+            "StdDev": 0.01,
+            "Clamp": true
+        },
+        "Transmission": {
+            "Mean": 0.8,
+            "StdDev": 0.1,
+            "Clamp": true
+        },
+        "IncubationTime": {
+            "Mean": 10.0,
+            "StdDev": 3.0,
+            "Clamp": false
+        },
+        "RecoveryTime": {
+            "Mean": 50.0,
+            "StdDev": 10.0,
+            "Clamp": false
+        }
+    },
+    "government": {
+        "boldness": 0.5
+    },
+    "agentValues": {
+        "Trust": {
+            "Mean": 0.5,
+            "StdDev": 0.3,
+            "Clamp": true
+        },
+        "AgeGroup": {
+            "Mean": 2.0,
+            "StdDev": 2.0,
+            "Clamp": false
+        },
+        "MedicalRecovery": {
+            "Mean": 0.01,
+            "StdDev": 0.003,
+            "Clamp": false
+        },
+        "MedicalPatients": 3
+    }
+}

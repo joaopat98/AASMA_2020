@@ -22,7 +22,7 @@ public static class CSVManager
         "Civilians",
         "Police",
         "Medical Staff"
-    };    
+    };
     private static string[] virusHeadings = new string[3] {
         "Lethality",
         "Transmission Rate",
@@ -134,5 +134,11 @@ public static class CSVManager
     {
         return GetDirectoryPath() + "/" + reportFileName + "_" + TimeNow + ".csv";
     }
+
+    public static string GetSettingsFilePath()
+    {
+        return GetDirectoryPath() + "/" + reportFileName + "_" + TimeNow + " settings.json";
+    }
+
     #endregion
 }
