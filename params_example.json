@@ -8,23 +8,23 @@
     "virus": {
         "startingInfected": 10,
         "Lethality": {
-            "Mean": 0.05,
+            "Mean": 0.1,
             "StdDev": 0.01,
             "Clamp": true
         },
         "Transmission": {
-            "Mean": 0.8,
+            "Mean": 0.9,
             "StdDev": 0.1,
             "Clamp": true
         },
         "IncubationTime": {
-            "Mean": 10.0,
-            "StdDev": 3.0,
+            "Mean": 16.0,
+            "StdDev": 2.0,
             "Clamp": false
         },
         "RecoveryTime": {
-            "Mean": 50.0,
-            "StdDev": 10.0,
+            "Mean": 70.0,
+            "StdDev": 5.0,
             "Clamp": false
         }
     },

@@ -141,7 +141,7 @@ public static class CSVManager
 
     public static string GetSettingsFilePath()
     {
-        return GetDirectoryPath() + "/" + reportFileName + "_" + TimeNow + " settings.json";
+        return GetDirectoryPath() + "/settings.json";
     }
 
     #endregion
