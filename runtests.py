@@ -12,8 +12,8 @@ default_settings = json.load(f)
 f.close()
 
 settings = {
-    "Boldness": ("government/boldness", [0.0, 0.9, 0.1]),
-    "Trust": ("agentValues/Trust/Mean", [0.0, 0.9, 0.1])
+    "Transmission": ("virus/Transmission/Mean", [0.05, 0.15, 0.01]),
+    "Lethality": ("virus/Lethality/Mean", [0.8, 1.0, 0.02])
 }
 
 for param in settings:
@@ -28,7 +28,7 @@ for param in settings:
         new_settings["statisticsFolderExtension"] = str(
             param) + "/" + str(round(val, 2))
         dpath.util.set(new_settings, settings[param][0], round(val, 2))
-        f = open("Build\params.json", "w")
+        f = open("build\params.json", "w")
         json.dump(new_settings, f)
         f.close()
         for i in range(5):

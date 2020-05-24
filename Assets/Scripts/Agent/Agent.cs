@@ -98,11 +98,11 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
         //If you are >80 years old the lethality is 5 times as high as <20 years old.
         LethalityFactor = 0.2f + this.AgeGroup * 0.2f;
 
-        //Being medical staff or police increases your chance of being infected by 3.
+        //Being medical staff or police increases your chance of being infected by 2.
         if (this.Type == AgentType.Civilian)
-            InfectabilityFactor = 0.2f;
+            InfectabilityFactor = 0.5f;
         else
-            InfectabilityFactor = 0.8f;
+            InfectabilityFactor = 1;
 
         //Younger People can ttake as little as 60% less time to recover from the virus when compared to older people.
         RecoveryFactor = 0.6f + this.AgeGroup * 0.1f;
