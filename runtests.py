@@ -1,5 +1,6 @@
 import json
 import os
+import datetime
 from numpy import arange, linspace
 from copy import deepcopy
 import dpath.util
@@ -7,7 +8,7 @@ from subprocess import Popen
 # to install modules run pip3 install numpy dpath
 
 
-f = open("params_example.json")
+f = open("params_example_V2.json")
 default_settings = json.load(f)
 f.close()
 
@@ -24,7 +25,8 @@ for param in settings:
     interval = arange(nums[0], nums[1] + 1 if isinstance(nums[2],
                                                          int) else nums[1] + (nums[2]/10), nums[2])
     for val in interval:
-        print("\t" + str(round(val, 2)))
+        currentDT = datetime.datetime.now()
+        print("\t" + str(round(val, 2)) + " Stamp: " + str(currentDT.hour) + ":" + str(currentDT.minute) + ":" + str(currentDT.second))
         new_settings["statisticsFolderExtension"] = str(
             param) + "/" + str(round(val, 2))
         dpath.util.set(new_settings, settings[param][0], round(val, 2))

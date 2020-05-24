@@ -168,7 +168,7 @@ public abstract class Agent : MonoBehaviour, IEquatable<Agent>
         SocialDistancing = Trust * govAdvice.socialDistancing;
         float infectedPercent = knownInfected / (float)knownNeighbors;
         float deadPercent = knownDead / (float)knownNeighbors;
-        Fear = Mathf.Max(infectedPercent, deadPercent);
+        Fear = Mathf.Clamp01(infectedPercent + 10 * deadPercent);
         if (aliveNeighbors > 0)
         {
             SocialDistancing += (1 - Trust) * SocialDistancingNeighbors * Fear;
