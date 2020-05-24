@@ -135,7 +135,7 @@ public class SimulationManager : MonoBehaviour
         CreateReport();
         if (!Application.isEditor)
         {
-            File.Copy("params.json", CSVManager.GetSettingsFilePath());
+            File.Copy("params.json", CSVManager.GetSettingsFilePath(), true);
             Playing = true;
         }
     }
